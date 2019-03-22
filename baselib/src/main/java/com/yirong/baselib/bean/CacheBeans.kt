@@ -6,9 +6,7 @@ public class CacheBeans{
             return "RequestBean{type=$type,className = $className,methodName=$methodName},requestParams.size=${requestParams.size}"
         }
     }
-
     data class ResponseBean private constructor(var data:Any)
-
 
     data class RequestParameter private constructor(var parameterClassName: String,var parameterValue:String){
         override fun toString(): String {

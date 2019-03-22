@@ -1,4 +1,4 @@
-package com.yirong.baselib
+package com.yirong.baselib.cache
 
 import android.os.Build
 import android.support.annotation.RequiresApi
@@ -8,11 +8,11 @@ import java.lang.reflect.Method
 
 
 
+
 object CacheCenter {
     private var mClasses:HashMap<String,Class<*>> = HashMap()//缓存class
     private var mMethods:HashMap<Class<*>,HashMap<String,Method>> = HashMap()//缓存方法列表
     private var mObjects:HashMap<String,Any> = HashMap()//缓存对象
-
 
     @RequiresApi(Build.VERSION_CODES.N)
     fun register(clazz:Class<*> ){
@@ -24,6 +24,12 @@ object CacheCenter {
     fun getObject(name:String):Any?{
         return mObjects[name]
     }
+
+    fun putObject(name: String, `object`: Any) {
+        mObjects[name] = `object`
+    }
+
+
     @RequiresApi(Build.VERSION_CODES.N)
     private fun registerMethod(clazz: Class<*>) {
         var methods:Array<Method> = clazz.methods//获取类中方法数组
@@ -46,12 +52,11 @@ object CacheCenter {
             if (method != null) {
                 return method!!
             }
-
         }
         return null
     }
 
-    private fun getClassType(className: String?): Class<*>?{
+    fun getClassType(className: String?): Class<*>?{
         if(TextUtils.isEmpty(className)){
             return null
         }
@@ -61,6 +66,5 @@ object CacheCenter {
         }
         return clazz
     }
-
 
 }

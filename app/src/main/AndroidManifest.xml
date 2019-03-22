@@ -17,6 +17,12 @@
             </intent-filter>
         </activity>
         <activity android:name=".SecondActivity" android:process=":b"></activity>
+
+        <service android:name="com.yirong.baselib.service.ProcessService">
+            <intent-filter>
+                <action android:name="com.yirong.baselib.service.ProcessService"></action>
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>
