@@ -14,14 +14,17 @@ class SecondActivity :BaseActivity(){
         ProcessManager.connect(this)
         //获取请求结果
         UserManager.get().getAccount()
-    }
 
+
+    }
+    //得到对象
     fun userManager(view:View){
-        ProcessManager.get(IUserManager::class.java)
+        ProcessManager.getInstance(IUserManager::class.java)
+
     }
-
+    //获取方法
     fun getUser(view:View){
-
+        UserManager.get().getAccount()
     }
 
 }

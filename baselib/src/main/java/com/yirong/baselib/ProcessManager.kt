@@ -8,11 +8,16 @@ import com.yirong.baselib.cache.CacheCenter
 import android.content.ComponentName
 import android.os.IBinder
 import android.content.ServiceConnection
-
 import android.content.Intent
+import android.os.RemoteException
 import android.text.TextUtils
+import android.util.Log
 import com.yirong.baselib.service.ProcessService
 import java.lang.reflect.Method
+import com.yirong.baselib.bean.CacheBeans.RequestParameter
+import com.yirong.baselib.bean.CacheBeans.RequestBean
+import com.yirong.baselib.annotation.ClassId
+import java.lang.reflect.Proxy
 
 
 object ProcessManager {
@@ -41,14 +46,40 @@ object ProcessManager {
         return getProxy(clazz)
     }
 
-    private fun <T> sendRequest(type: Int, clazz: Class<T>, method:Method?,parameters: Array<out Any>) {
-        if(parameters.isNotEmpty()){
-            parameters.
+     fun <T> sendRequest(type: Int, clazz: Class<T>, method:Method?,parameters: Array<out Any>):String?{
+        var requestParameters: Array<RequestParameter?>? = null
+        if(parameters!=null && parameters.isNotEmpty()){
+            requestParameters = arrayOfNulls<RequestParameter>(parameters.size)
+
+            for (i in 0 until parameters.size) {
+                val parameter = parameters[i]
+                val parameterClassName = parameter.javaClass.name
+                val parameterValue = gson.toJson(parameter)
+                val requestParameter = RequestParameter(parameterClassName, parameterValue)
+                requestParameters[i] = requestParameter
+            }
         }
+        val className = clazz.getAnnotation(ClassId::class.java).value
+
+        val methodName = if (method == null) " " else method.name
+
+        val requestBean = RequestBean(type, className, methodName, requestParameters)
+
+
+        //请求获取单例 --》对象 ---》请求对象的方法
+        val request = gson.toJson(requestBean)
+        Log.i("whc", "sendRequest: $request")
+        try {
+            return processInterface.send(request)
+        } catch (e: RemoteException) {
+            e.printStackTrace()
+        }
+        return null
     }
 
     private fun <T> getProxy(clazz: Class<T>): T {
-
+        val classLoader = clazz.classLoader
+        return Proxy.newProxyInstance(classLoader,arrayOf<Class<*>>(clazz),ProcessInvocationHandler(clazz)) as T
     }
 
     fun connect(context: Context) {

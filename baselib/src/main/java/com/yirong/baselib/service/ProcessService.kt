@@ -10,20 +10,14 @@ import com.google.gson.Gson
 import com.yirong.baselib.bean.CacheBeans
 import com.yirong.baselib.cache.CacheCenter
 import java.lang.reflect.InvocationTargetException
-import com.yirong.baselib.bean.CacheBeans.RequestParameter
 import com.yirong.baselib.bean.CacheBeans.RequestBean
-
-
-
 
 class ProcessService:Service() {
 
     companion object {
         val GET_INSTANCE = 1//获取对象
-
         val GET_METHOD = 2//执行方法
     }
-
 
     private val cacheCenter = CacheCenter
     private val gson = Gson()
@@ -76,8 +70,8 @@ class ProcessService:Service() {
             mParameters = arrayOfNulls(requestParameters!!.size)
             for (i in requestParameters!!.indices) {
                 val requestParameter = requestParameters!![i]
-                val clazz = cacheCenter.getClassType(requestParameter.parameterClassName)
-                mParameters[i] = gson.fromJson(requestParameter.parameterValue, clazz)
+                val clazz = cacheCenter.getClassType(requestParameter!!.parameterClassName)
+                mParameters[i] = gson.fromJson(requestParameter!!.parameterValue, clazz)
             }
         } else {
             mParameters = arrayOfNulls(0)
